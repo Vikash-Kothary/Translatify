@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="clarifai-api-java-1.1.0">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.clarifai/clarifai-api-java/1.1.0/e577a50cca5813bd87f90bc3bb5ebcdfe1b05d8f/clarifai-api-java-1.1.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.clarifai/clarifai-api-java/1.1.0/8ca77828ed81b4772476ae5ba8804ecff3a4c42d/clarifai-api-java-1.1.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
