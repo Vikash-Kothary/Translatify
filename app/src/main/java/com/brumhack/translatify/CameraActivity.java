@@ -23,6 +23,7 @@ import com.clarifai.api.RecognitionRequest;
 import com.clarifai.api.RecognitionResult;
 import com.clarifai.api.Tag;
 import com.clarifai.api.exception.ClarifaiException;
+import com.memetix.mst.language.Language;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -45,7 +46,6 @@ public class CameraActivity extends Activity {
     private Button mBtnShot;
     private CountDownTimer countdown;
     private Camera camera;
-    private Timer timer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +63,7 @@ public class CameraActivity extends Activity {
         mBtnShot.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                realtime();
+                camera.takePicture();
             }
         });
 
@@ -102,7 +102,7 @@ public class CameraActivity extends Activity {
 
                     public void onFinish() {
 //                        Log.e(TAG, ":)");
-                        getTags(null);
+//                        getTags(null);
                     }
                 }.start();
             }
@@ -116,18 +116,7 @@ public class CameraActivity extends Activity {
 
     }
 
-    public void realtime(){
-        timer = new Timer();
-        timer.scheduleAtFixedRate(new TimerTask() {
-            public void run() {
-                //Call function
-                camera.takePicture();
-            }
-        }, 0, 5000);
-    }
-
     public void getTags(View view) {
-        timer.cancel();
         // The user picked an image. Send it to Clarifai for recognition.
         Bitmap bitmap = null;
         for (File imageFrame : camera.getPictures()) {
@@ -190,11 +179,18 @@ public class CameraActivity extends Activity {
                 // Display the list of tags in the UI.
                 StringBuilder b = new StringBuilder();
                 for (Tag tag : result.getTags()) {
-                    b.append(b.length() > 0 ? ", " : "").append(tag.getName());
+                    if(!tag.getName().toString().contains("nobody") && !tag.getName().toString().contains("politics")){
+                        b.append(b.length() > 0 ? ", " : "").append(tag.getName());
+                    }
                 }
                 TextView textView_tags = (TextView) findViewById(R.id.textView_tags);
-                textView_tags.append("Tags:\n" + b + "\n\n");
-                Log.e(TAG,"Tags:\n" + b);
+                textView_tags.append("Tags:\n" + b.toString().split(",")[1] + " : ");
+                try {
+                    Translator.translate(b.toString().split(",")[1], Language.FRENCH, textView_tags);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                Log.e(TAG, "Tags:\n" + b);
             } else {
                 Log.e(TAG, "Clarifai: " + result.getStatusMessage());
                 Log.e(TAG,"Sorry, there was an error recognizing your image.");
@@ -202,98 +198,4 @@ public class CameraActivity extends Activity {
         } else {
             Log.e(TAG, "Sorry, there was an error recognizing your image.");
         }
-    }
-//        AsyncTask<Uri, Void, RecognitionResult> _call = new AsyncTask<Uri, Void, RecognitionResult>() {
-//            @Override
-//            protected RecognitionResult doInBackground(Uri... uris) {
-//                List<RecognitionResult> results =
-//                        null;
-//                ImageView textView = (ImageView) findViewById(R.id.countdown);
-//
-//                for (File imageFrame : camera.getPictures()) {
-//                    Bitmap bitmap = null;
-//                    BitmapFactory.Options options = new BitmapFactory.Options();
-//                    options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-//                    try {
-//                        bitmap = BitmapFactory.decodeStream(new FileInputStream(imageFrame), null, options);
-//                    } catch (FileNotFoundException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
-//                File file = new File(Environment.getExternalStorageDirectory() + "/DCIM", "pic.jpg");
-//                results = clarifai.recognize(new RecognitionRequest(file));
-//                for (Tag tag : results.get(0).getTags()) {
-//                    Log.e(TAG, tag.getName() + ": " + tag.getProbability());
-//                }
-//                return null;
-//            }
-//        };
-//        geView = (ImageView) findViewById(R.id.countdown);
-//        File file = new File(Environment.getExternalStorageDirectory() + "/DCIM", "pic.jpg");
-//        Bitmap bitmap = null;
-//        BitmapFactory.Options options = new BitmapFactory.Options();
-//        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-//        try {
-//            bitmap = BitmapFactory.decodeStream(new FileInputStream(file), null, options);
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        }
-//        if (bitmap != null) {
-//            imageView.setImageBitmap(bitmap);
-//            Log.e(TAG, "Recognizing...");
-//
-//            // Run recognition on a background thread since it makes a network call.
-//            new AsyncTask<Bitmap, Void, RecognitionResult>() {
-//                @Override protected RecognitionResult doInBackground(Bitmap... bitmaps) {
-//                    return recognizeBitmap(bitmaps[0]);
-//                }
-//                @Override protected void onPostExecute(RecognitionResult result) {
-//                    updateUIForResult(result);
-//                }
-//            }.execute(bitmap);
-//        } else {
-//            Log.e(TAG, "Unable to load selected image.");
-//        }
-//    }
-//
-//    /** Sends the given bitmap to Clarifai for recognition and returns the result. */
-//    private RecognitionResult recognizeBitmap(Bitmap bitmap) {
-//        try {
-//            // Scale down the image. This step is optional. However, sending large images over the
-//            // network is slow and  does not significantly improve recognition performance.
-//            Bitmap scaled = Bitmap.createScaledBitmap(bitmap, 320,
-//                    320 * bitmap.getHeight() / bitmap.getWidth(), true);
-//
-//            // Compress the image as a JPEG.
-//            ByteArrayOutputStream out = new ByteArrayOutputStream();
-//            scaled.compress(Bitmap.CompressFormat.JPEG, 90, out);
-//            byte[] jpeg = out.toByteArray();
-//
-//            ClarifaiClient client = new ClarifaiClient(APP_ID, APP_SECRET);
-//            // Send the JPEG to Clarifai and return the result.
-//            return client.recognize(new RecognitionRequest(jpeg)).get(0);
-//        } catch (ClarifaiException e) {
-//            Log.e(TAG, "Clarifai error", e);
-//            return null;
-//        }
-//    }
-//
-//    /** Updates the UI by displaying tags for the given result. */
-//    private void updateUIForResult(RecognitionResult result) {
-//        if (result != null) {
-//            if (result.getStatusCode() == RecognitionResult.StatusCode.OK) {
-//                // Display the list of tags in the UI.
-//                StringBuilder b = new StringBuilder();
-//                for (Tag tag : result.getTags()) {
-//                    b.append(b.length() > 0 ? ", " : "").append(tag.getName());
-//                }
-//                Log.e(TAG,"Tags:\n" + b);
-//            } else {
-//                Log.e(TAG, "Clarifai: " + result.getStatusMessage());
-//                Log.e(TAG, "Sorry, there was an error recognizing your image.");
-//            }
-//        } else {
-//            Log.e(TAG, "Sorry, there was an error recognizing your image.");
-//        }
-//    }
-}
+    }}
