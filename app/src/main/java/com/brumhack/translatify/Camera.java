@@ -52,6 +52,16 @@ public class Camera {
 
     private int picNumber;
 
+    public File[] getPictures() {
+        File[] files = new File[pictures.size()];
+        for(int i=0;i<pictures.size();i++){
+            files[i] = pictures.get(i);
+        }
+        return files;
+    }
+
+    private ArrayList<File> pictures = new ArrayList<>();
+
     private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
     static {
         ORIENTATIONS.append(Surface.ROTATION_0, 90);
@@ -105,7 +115,7 @@ public class Camera {
             int rotation = windowManager.getDefaultDisplay().getRotation();
             captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, ORIENTATIONS.get(rotation));
 
-            final File file = new File(Environment.getExternalStorageDirectory() + "/DCIM", "pic" + (picNumber++) + ".jpg");
+            final File file = new File(Environment.getExternalStorageDirectory() + "/DCIM", "pic.jpg");
 
             ImageReader.OnImageAvailableListener readerListener = new ImageReader.OnImageAvailableListener() {
 
@@ -140,6 +150,7 @@ public class Camera {
                             output.close();
                         }
                     }
+                    pictures.add(file);
                 }
 
             };
@@ -325,6 +336,6 @@ public class Camera {
 
     public void onResume() {
         Log.e(TAG, "onResume");
-        openCamera();
+
     }
 }
