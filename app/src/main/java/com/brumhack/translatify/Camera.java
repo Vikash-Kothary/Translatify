@@ -173,25 +173,31 @@ public class Camera {
 
             };
 
-            mCameraDevice.createCaptureSession(outputSurfaces, new CameraCaptureSession.StateCallback() {
-
+            final List<Surface> surface = outputSurfaces;
+            backgroudHandler.post(new Runnable() {
                 @Override
-                public void onConfigured(CameraCaptureSession session) {
-
+                public void run() {
                     try {
-                        session.capture(captureBuilder.build(), captureListener, backgroudHandler);
-                    } catch (CameraAccessException e) {
+                        mCameraDevice.createCaptureSession(surface, new CameraCaptureSession.StateCallback() {
 
-                        e.printStackTrace();
-                    }
+                            @Override
+                            public void onConfigured(CameraCaptureSession session) {
+
+                                try {
+                                    session.capture(captureBuilder.build(), captureListener, backgroudHandler);
+                                } catch (CameraAccessException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+
+                            @Override
+                            public void onConfigureFailed(CameraCaptureSession session) {
+
+                            }
+                        }, backgroudHandler);
+                    }catch (Exception e){};
                 }
-
-                @Override
-                public void onConfigureFailed(CameraCaptureSession session) {
-
-                }
-            }, backgroudHandler);
-
+            });
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
@@ -336,6 +342,7 @@ public class Camera {
 
     public void onResume() {
         Log.e(TAG, "onResume");
-
+        openCamera();
+        startPreview();
     }
 }

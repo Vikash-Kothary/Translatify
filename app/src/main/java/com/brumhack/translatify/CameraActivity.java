@@ -5,7 +5,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.hardware.SensorEvent;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -29,7 +28,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 /**
@@ -38,13 +38,14 @@ import java.io.IOException;
 public class CameraActivity extends Activity {
 
     private final static String TAG = "Translatify";
-    private final static String APP_ID = "DqI1mgCUeAXlPPs8fFAq3WV85iPO3K3DJmzaWBxB";
-    private final static String APP_SECRET = "tDbjwTRGP6noQ0NlFH2j7FugR3iN_xPvxjqrocRo";
+    public final static String APP_ID = "DqI1mgCUeAXlPPs8fFAq3WV85iPO3K3DJmzaWBxB";
+    public final static String APP_SECRET = "tDbjwTRGP6noQ0NlFH2j7FugR3iN_xPvxjqrocRo";
     private final static String APP_TOKEN = "JbD6XHtC8AX28WeChBAt5rK2lZKeIU";
 
     private Button mBtnShot;
     private CountDownTimer countdown;
     private Camera camera;
+    private Timer timer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +63,7 @@ public class CameraActivity extends Activity {
         mBtnShot.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                camera.takePicture();
+                realtime();
             }
         });
 
@@ -101,7 +102,7 @@ public class CameraActivity extends Activity {
 
                     public void onFinish() {
 //                        Log.e(TAG, ":)");
-//                        getTags(null);
+                        getTags(null);
                     }
                 }.start();
             }
@@ -115,7 +116,18 @@ public class CameraActivity extends Activity {
 
     }
 
+    public void realtime(){
+        timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            public void run() {
+                //Call function
+                camera.takePicture();
+            }
+        }, 0, 5000);
+    }
+
     public void getTags(View view) {
+        timer.cancel();
         // The user picked an image. Send it to Clarifai for recognition.
         Bitmap bitmap = null;
         for (File imageFrame : camera.getPictures()) {
