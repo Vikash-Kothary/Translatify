@@ -38,7 +38,7 @@ import java.util.TimerTask;
  */
 public class CameraActivity extends Activity {
 
-    private final static String TAG = "Translatify";
+    public final static String TAG = "Translatify";
     public final static String APP_ID = "DqI1mgCUeAXlPPs8fFAq3WV85iPO3K3DJmzaWBxB";
     public final static String APP_SECRET = "tDbjwTRGP6noQ0NlFH2j7FugR3iN_xPvxjqrocRo";
     private final static String APP_TOKEN = "JbD6XHtC8AX28WeChBAt5rK2lZKeIU";
@@ -63,7 +63,8 @@ public class CameraActivity extends Activity {
         mBtnShot.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                camera.takePicture();
+                camera.takeAnother();
+                getTags(null);
             }
         });
 
@@ -100,8 +101,9 @@ public class CameraActivity extends Activity {
                     }
 
                     public void onFinish() {
-//                        Log.e(TAG, ":)");
-//                        getTags(null);
+                        Log.e(TAG, ":)");
+                        camera.takePicture();
+                        getTags(null);
 
                     }
                 }.start();
@@ -119,16 +121,16 @@ public class CameraActivity extends Activity {
     public void getTags(View view) {
         // The user picked an image. Send it to Clarifai for recognition.
         Bitmap bitmap = null;
-        for (File imageFrame : camera.getPictures()) {
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inPreferredConfig = Bitmap.Config.ARGB_8888;
             try {
-                bitmap = BitmapFactory.decodeStream(new FileInputStream(imageFrame), null, options);
+                bitmap = BitmapFactory.decodeStream(new FileInputStream(camera.getPicture()), null, options);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
 
             if (bitmap != null) {
+
                 Log.e(TAG, "Recognizing...");
 
                 // Run recognition on a background thread since it makes a network call.
@@ -146,13 +148,15 @@ public class CameraActivity extends Activity {
             } else {
                 Log.e(TAG, "Unable to load selected image.");
             }
-        }
+
     }
 
     /**
      * Sends the given bitmap to Clarifai for recognition and returns the result.
      */
     private RecognitionResult recognizeBitmap(Bitmap bitmap) {
+
+        Log.e(TAG, "Clarifai error");
         try {
             // Scale down the image. This step is optional. However, sending large images over the
             // network is slow and  does not significantly improve recognition performance.
@@ -183,18 +187,17 @@ public class CameraActivity extends Activity {
                 // Display the list of tags in the UI.
                 StringBuilder b = new StringBuilder();
                 for (Tag tag : result.getTags()) {
-                    if (!tag.getName().toString().contains("nobody") && !tag.getName().toString().contains("politics")) {
+                    if (!tag.getName().toString().contains("nobody") && !tag.getName().toString().contains("politics") && !tag.getName().toString().contains("blur")) {
                         b.append(b.length() > 0 ? ", " : "").append(tag.getName());
                     }
                 }
-//                TextView textView_tags = (TextView) findViewById(R.id.textView_tags);
                 String str = b.toString().split(",")[0] + " : ";
                 try {
-                    Translator.translate(this, b.toString().split(",")[0], Language.FRENCH, str);
+                    new Translator(this).translate(b.toString().split(",")[0], Language.FRENCH, str);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                Log.e(TAG, "Tags:\n" + b);
+                Log.e("Translator", "Tags:\n" + b);
             } else {
                 Log.e(TAG, "Clarifai: " + result.getStatusMessage());
                 Log.e(TAG, "Sorry, there was an error recognizing your image.");

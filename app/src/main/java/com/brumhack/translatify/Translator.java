@@ -2,6 +2,7 @@ package com.brumhack.translatify;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -12,7 +13,13 @@ import com.memetix.mst.translate.Translate;
  * Created by Vikash Kothary on 25-Oct-15.
  */
 public class Translator {
-    public static void translate(final Context context, final String text, final Language language, final String str) throws Exception {
+    private Context context;
+    public Translator(Context context ){
+        this.context = context;
+    }
+
+    public void translate(final String text, final Language language, final String str) throws Exception {
+        Log.e("Translator", str);
         new AsyncTask<String, Void, String>() {
             @Override
             protected String doInBackground(String... params) {

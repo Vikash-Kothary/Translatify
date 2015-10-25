@@ -2,11 +2,11 @@
 <items version="2" >
 
     <item
-        jar="C:\Users\Vikash Kothary\.gradle\caches\modules-2\files-2.1\com.google.code.gson\gson\2.3.1\ecb6e1f8e4b0e84c4b886c2f14a1500caf309757\gson-2.3.1.jar"
+        jar="D:\Documents\AndroidStudioProjects\Translatify\app\libs\microsoft-translator-java-api-0.6.2-jar-with-dependencies.jar"
         jumboMode="false"
         revision="21.0.1"
-        sha1="ecb6e1f8e4b0e84c4b886c2f14a1500caf309757">
-        <dex dex="D:\Documents\AndroidStudioProjects\Translatify\app\build\intermediates\pre-dexed\debug\gson-2.3.1-5167d1bfdb5e69ffa8a5deffd95e785758c63a80.jar" />
+        sha1="d60939a936405b0b2a51878665c9a8bbd6672414">
+        <dex dex="D:\Documents\AndroidStudioProjects\Translatify\app\build\intermediates\pre-dexed\debug\microsoft-translator-java-api-0.6.2-jar-with-dependencies-5442aaf956a7124783017d4641a4b9988fb691f0.jar" />
     </item>
     <item
         jar="C:\Users\Vikash Kothary\.gradle\caches\modules-2\files-2.1\com.clarifai\clarifai-api-java\1.1.0\e577a50cca5813bd87f90bc3bb5ebcdfe1b05d8f\clarifai-api-java-1.1.0.jar"
@@ -16,11 +16,11 @@
         <dex dex="D:\Documents\AndroidStudioProjects\Translatify\app\build\intermediates\pre-dexed\debug\clarifai-api-java-1.1.0-8c4bd8a24eab0e9b07434a4bec71daeb47ae3e91.jar" />
     </item>
     <item
-        jar="D:\Documents\AndroidStudioProjects\Translatify\app\libs\microsoft-translator-java-api-0.6.2-jar-with-dependencies.jar"
+        jar="C:\Users\Vikash Kothary\.gradle\caches\modules-2\files-2.1\com.google.code.gson\gson\2.3.1\ecb6e1f8e4b0e84c4b886c2f14a1500caf309757\gson-2.3.1.jar"
         jumboMode="false"
         revision="21.0.1"
-        sha1="d60939a936405b0b2a51878665c9a8bbd6672414">
-        <dex dex="D:\Documents\AndroidStudioProjects\Translatify\app\build\intermediates\pre-dexed\debug\microsoft-translator-java-api-0.6.2-jar-with-dependencies-5442aaf956a7124783017d4641a4b9988fb691f0.jar" />
+        sha1="ecb6e1f8e4b0e84c4b886c2f14a1500caf309757">
+        <dex dex="D:\Documents\AndroidStudioProjects\Translatify\app\build\intermediates\pre-dexed\debug\gson-2.3.1-5167d1bfdb5e69ffa8a5deffd95e785758c63a80.jar" />
     </item>
 
 </items>

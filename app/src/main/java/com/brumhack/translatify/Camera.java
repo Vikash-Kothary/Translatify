@@ -26,9 +26,11 @@ import android.view.WindowManager;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -50,19 +52,12 @@ public class Camera {
     private CaptureRequest.Builder mPreviewBuilder;
     private CameraCaptureSession mPreviewSession;
 
-    private int picNumber;
+    public int picNumber;
 
-    public File[] getPictures() {
-        File[] files = new File[pictures.size()];
-        for(int i=0;i<pictures.size();i++){
-            files[i] = pictures.get(i);
-        }
-        return files;
-    }
-
-    private ArrayList<File> pictures = new ArrayList<>();
+    private File file = new File(Environment.getExternalStorageDirectory() + "/DCIM", "pic.jpg");
 
     private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
+
     static {
         ORIENTATIONS.append(Surface.ROTATION_0, 90);
         ORIENTATIONS.append(Surface.ROTATION_90, 0);
@@ -70,7 +65,7 @@ public class Camera {
         ORIENTATIONS.append(Surface.ROTATION_270, 180);
     }
 
-    public Camera(Context context, TextureView textureView){
+    public Camera(Context context, TextureView textureView) {
         mContext = context;
         mTextureView = textureView;
         mTextureView.setSurfaceTextureListener(mSurfaceTextureListener);
@@ -78,6 +73,14 @@ public class Camera {
     }
 
     protected void takePicture() {
+//        if (file.exists()) return;
+        try {
+            file.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        final File file = new File(Environment.getExternalStorageDirectory() + "/DCIM", "pic.jpg");
         Log.e(TAG, "takePicture");
         if (mCameraDevice == null) {
             Log.e(TAG, "mCameraDevice is null, return");
@@ -115,7 +118,7 @@ public class Camera {
             int rotation = windowManager.getDefaultDisplay().getRotation();
             captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, ORIENTATIONS.get(rotation));
 
-            final File file = new File(Environment.getExternalStorageDirectory() + "/DCIM", "pic.jpg");
+
 
             ImageReader.OnImageAvailableListener readerListener = new ImageReader.OnImageAvailableListener() {
 
@@ -150,7 +153,6 @@ public class Camera {
                             output.close();
                         }
                     }
-                    pictures.add(file);
                 }
 
             };
@@ -167,7 +169,8 @@ public class Camera {
                                                CaptureRequest request, TotalCaptureResult result) {
 
                     super.onCaptureCompleted(session, request, result);
-                    Toast.makeText(mContext, "Saved:" + file, Toast.LENGTH_SHORT).show();
+                    Log.e("Translator", "Saved:" + file);
+                    setFile(file);
                     startPreview();
                 }
 
@@ -326,7 +329,7 @@ public class Camera {
         }
     }
 
-    protected void onPause(){
+    protected void onPause() {
         Log.e(TAG, "onPause");
         if (null != mCameraDevice) {
             mCameraDevice.close();
@@ -337,5 +340,53 @@ public class Camera {
     public void onResume() {
         Log.e(TAG, "onResume");
 
+    }
+
+    public void takeAnother(){
+       file = new File(Environment.getExternalStorageDirectory() + "/DCIM", "pic.jpg");
+        if(file.exists()){
+            boolean test = file.delete();
+            Log.e("Translator", test+"");
+        }
+        takePicture();
+    }
+
+    public File getPicture() {
+        File file1 = new File(Environment.getExternalStorageDirectory() + "/DCIM", "pic.jpg");
+//        try {
+//            file1.createNewFile();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        try {
+//            copy(file,file1);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        if(file.exists()){
+//            boolean test = file1.delete();
+//            Log.e("Translator", test+"");
+//        }
+        return file1;
+    }
+
+
+
+    public void copy(File src, File dst) throws IOException {
+        InputStream in = new FileInputStream(src);
+        OutputStream out = new FileOutputStream(dst);
+
+        // Transfer bytes from in to out
+        byte[] buf = new byte[1024];
+        int len;
+        while ((len = in.read(buf)) > 0) {
+            out.write(buf, 0, len);
+        }
+        in.close();
+        out.close();
+    }
+
+    public void setFile(File file) {
+        this.file = file;
     }
 }
