@@ -76,7 +76,6 @@ public class CameraActivity extends Activity {
     }
 
 
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -95,7 +94,7 @@ public class CameraActivity extends Activity {
         if (accX <= 0.2) {
             ((ImageView) findViewById(R.id.countdown)).setBackgroundColor(Color.GREEN);
             if (countdown == null) {
-                countdown = new CountDownTimer(3000, 1000) {
+                countdown = new CountDownTimer(1000, 500) {
                     public void onTick(long millisUntilFinished) {
 //                        Log.e(TAG, "seconds remaining: " + millisUntilFinished / 1000);
                     }
@@ -103,6 +102,7 @@ public class CameraActivity extends Activity {
                     public void onFinish() {
 //                        Log.e(TAG, ":)");
 //                        getTags(null);
+
                     }
                 }.start();
             }
@@ -149,7 +149,9 @@ public class CameraActivity extends Activity {
         }
     }
 
-    /** Sends the given bitmap to Clarifai for recognition and returns the result. */
+    /**
+     * Sends the given bitmap to Clarifai for recognition and returns the result.
+     */
     private RecognitionResult recognizeBitmap(Bitmap bitmap) {
         try {
             // Scale down the image. This step is optional. However, sending large images over the
@@ -172,30 +174,33 @@ public class CameraActivity extends Activity {
         }
     }
 
-    /** Updates the UI by displaying tags for the given result. */
+    /**
+     * Updates the UI by displaying tags for the given result.
+     */
     private void updateUIForResult(RecognitionResult result) {
         if (result != null) {
             if (result.getStatusCode() == RecognitionResult.StatusCode.OK) {
                 // Display the list of tags in the UI.
                 StringBuilder b = new StringBuilder();
                 for (Tag tag : result.getTags()) {
-                    if(!tag.getName().toString().contains("nobody") && !tag.getName().toString().contains("politics")){
+                    if (!tag.getName().toString().contains("nobody") && !tag.getName().toString().contains("politics")) {
                         b.append(b.length() > 0 ? ", " : "").append(tag.getName());
                     }
                 }
-                TextView textView_tags = (TextView) findViewById(R.id.textView_tags);
-                textView_tags.append("Tags:\n" + b.toString().split(",")[1] + " : ");
+//                TextView textView_tags = (TextView) findViewById(R.id.textView_tags);
+                String str = b.toString().split(",")[0] + " : ";
                 try {
-                    Translator.translate(b.toString().split(",")[1], Language.FRENCH, textView_tags);
+                    Translator.translate(this, b.toString().split(",")[0], Language.FRENCH, str);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
                 Log.e(TAG, "Tags:\n" + b);
             } else {
                 Log.e(TAG, "Clarifai: " + result.getStatusMessage());
-                Log.e(TAG,"Sorry, there was an error recognizing your image.");
+                Log.e(TAG, "Sorry, there was an error recognizing your image.");
             }
         } else {
             Log.e(TAG, "Sorry, there was an error recognizing your image.");
         }
-    }}
+    }
+}
